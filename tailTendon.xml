@@ -1,0 +1,81 @@
+<mujoco>
+    <option gravity="0 0 -9810" density="1e-6" viscosity="9e-7"/>
+
+    <asset>
+        <texture name="grid" type="2d" builtin="checker" width="512" height="512" rgb1=".1 .2 .3" rgb2=".2 .3 .4"/>
+        <material name="grid" texture="grid" texrepeat="0.1 0.1" texuniform="true" reflectance=".05"/>
+    </asset>
+
+    <default>
+        <default class="fin">
+            <geom type="box" size="3.3 3 0.1" rgba="1 1 1 1" mass="0.00016"/>
+            <joint type="hinge" axis="0 1 0" damping="18" stiffness="600" limited="true" range="-10 10" pos="3.3 0 0"/>
+            <motor gear="850" ctrllimited="true" ctrlrange="-2.5 2.5"/>
+            <site type="sphere" pos="3.3 0 0.1" size="0.2" rgba="1 1 0 1"/>
+        </default>
+    </default>
+
+    <worldbody>
+        <light diffuse=".5 .5 .5" pos="0 0 900" dir="0 0 -1"/>
+<!--        <geom type="plane" pos="0 0 -0.2" size="1 1 1" rgba="0.76 0.7 0.5 1"/>-->
+
+        <geom type="plane" size="100 100 .01" material="grid" pos="0 0 -40"/>
+        <geom type="plane" size="100 50 .01" material="grid" pos="0 100 10" euler="90 0 0"/>
+        <geom type="plane" size="100 50 .01" material="grid" pos="-100 0 10" euler="90 90 0"/>
+        <geom type="plane" size="100 50 .01" material="grid" pos="100 0 10" euler="90 -90 0"/>
+
+        <site class="fin" name="start" pos="-13.2 0 0.1"/>
+        <body name="fin2" childclass="fin" euler="0 0 180">
+                <geom/>
+                <joint name="21"/>
+                <site name="21"/>
+                <body pos="-6.6 0 0">
+                    <geom/>
+                    <joint name="22"/>
+                    <site name="22"/>
+                    <body pos="-6.6 0 0">
+                        <geom/>
+                        <joint name="23"/>
+                        <site name="23"/>
+                        <body pos="-6.6 0 0">
+                            <geom/>
+                            <joint name="24"/>
+                            <site name="24"/>
+                            <body pos="-6.6 0 0">
+                                <geom/>
+                                <joint name="25"/>
+                                <site name="25"/>
+                                <site name="end" pos="-3.3 0 0.1"/>
+                                <site name="amplitude1" pos="-3.3 0 0.1" type="sphere" size="0.0002"/>
+<!--                                <geom type="sphere" pos="-3.3 0 0" size="0.0002" mass="116e-6"/>-->
+<!--                                <geom type="sphere" pos="-3.3 0 0" size="0.0002" mass="333e-6"/>-->
+<!--                                <geom type="sphere" pos="-3.3 0 0" size="0.0002" mass="396e-6"/>-->
+<!--                                <geom type="sphere" pos="-3.3 0 0" size="0.0002" mass="667e-6"/>-->
+                            </body>
+                        </body>
+                    </body>
+                </body>
+            </body>
+
+    </worldbody>
+
+    <sensor>
+     <framepos name="amplitude1" objtype="site" objname="amplitude1"/>
+    </sensor>
+
+    <tendon>
+        <spatial name="t1" width="0.05" rgba="1 0 0 1" stiffness="10">
+            <site site="start"/>
+            <site site="21"/>
+            <site site="22"/>
+            <site site="23"/>
+            <site site="24"/>
+            <site site="25"/>
+            <site site="end"/>
+        </spatial>
+    </tendon>
+
+    <actuator> <!-- fin 2 -->
+        <motor class="fin" name="t1" tendon="t1"/>
+    </actuator>
+</mujoco>

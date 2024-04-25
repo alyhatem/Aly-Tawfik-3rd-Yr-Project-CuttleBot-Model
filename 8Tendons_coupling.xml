@@ -1,0 +1,505 @@
+<mujoco>
+    <option gravity="0 0 -9810" density="1e-6" viscosity="9e-7" timestep="0.002" integrator="implicitfast"/>
+
+    <asset>
+        <texture name="grid" type="2d" builtin="checker" width="512" height="512" rgb1=".1 .2 .3" rgb2=".2 .3 .4"/>
+        <material name="grid" texture="grid" texrepeat="0.02 0.02" texuniform="true" reflectance=".05"/>
+        <mesh name="foam" vertex="-10 -10.5 0  -10 10.5 0  10 10.5 0  10 -10.5 0
+                                  -9 -10.5 2   -9 10.5 2  9 10.5 2  9 -10.5 2
+                                  -8 -10.5 .35   -8 10.5 .35  8 10.5 .35  8 -10.5 .35
+                                  -6 -10.5 5   -6 10.5 5  6 10.5 5  6 -10.5 5
+                                  -4 -10.5 7  -4 10.5 7  4 10.5 7  4 -10.5 7
+                                  -2 -10.5 9.5   -2 10.5 9.5  2 10.5 9.5  2 -10.5 9.5
+                                  -0.5 -10.5 10   -0.5 10.5 10  0.5 10.5 10  0.5 -10.5 10"/>
+    </asset>
+
+    <extension>
+        <plugin plugin="mujoco.elasticity.membrane"/>
+    </extension>
+
+    <default>
+        <default class="fin">
+            <geom type="box" size="3.3 3 0.1" rgba="0.2 0.2 0.2 1" mass="0.00016" />
+            <joint type="hinge" axis="0 1 0" damping="85" stiffness="1500" limited="true" range="-10 10" pos="3.3 0 0"/>
+            <motor gear="3850" ctrllimited="true" ctrlrange="-1.6 1.6"/>
+            <site type="sphere" pos="3.3 0 0.1" size="0.2" rgba="1 1 0 1"/>
+            <equality solimp="0.99 0.99 0.00001" solref="0.0001 8"/>
+            <tendon width="0.05" rgba="1 0 0 1" limited="false" range="42.7 43.1"/>
+        </default>
+        <default class="body">
+            <geom type="box" size="10.5 6 3" rgba="0.3 0.3 0.3 1" mass="0.000000001" />
+        </default>
+    </default>
+
+    <worldbody>
+
+        <light diffuse=".8 .8 .8" mode="track" target="CuttleBot"  directional="true" dir="0 0 -1" castshadow="false"/>
+        <light diffuse=".8 .8 .8" mode="track" target="CuttleBot"  directional="true" dir="0 1 0" castshadow="false"/>
+        <geom type="plane" size="5000 5000 .01" material="grid" pos="0 0 -100"/>
+
+        <body name="CuttleBot">
+            <body name="main_body">
+                <geom name="main_body" type="box" size="22 67.5 0.2" mass="0.00256"/>
+            </body>
+            <geom class="body" pos="-11.5 49.5 3"/>
+            <geom class="body" pos="-11.5 16.5 3"/>
+            <geom class="body" pos="-11.5 -16.5 3"/>
+            <geom class="body" pos="-11.5 -49.5 3"/>
+            <geom class="body" pos="11.5 49.5 3"/>
+            <geom class="body" pos="11.5 16.5 3"/>
+            <geom class="body" pos="11.5 -16.5 3"/>
+            <geom class="body" pos="11.5 -49.5 3"/>
+            <geom name="spine" class="body" size="1 67.5 3.5" pos="0 0 3.5"/>
+            <body gravcomp="5.4878"> <!-- 7.0080045 for mass 0.0056-->
+                <geom name="foam1" type="mesh" mesh="foam" rgba="1 1 0.9 1" mass="0.001" pos="0 33 0.2" />
+                <geom name="foam2" type="mesh" mesh="foam" rgba="1 1 0.9 1" mass="0.001" pos="0 -33 0.2" />
+            </body>
+            <freejoint name="free"/>
+            <site name="centreOfMass" size="0.7" rgba="1 0.4 0.1 1"/>
+            <site class="fin" name="start1" pos="-13.2 49.5 0.1"/>
+            <body name="fin1" childclass="fin" pos="-25.3 49.5 0">
+                <geom/>
+                <joint name="11"/>
+                <site name="11"/>
+                <body name="1_2" pos="-6.6 0 0">
+                    <geom/>
+                    <joint name="12"/>
+                    <site name="12"/>
+                    <body name="1_3" pos="-6.6 0 0">
+                        <geom/>
+                        <joint name="13"/>
+                        <site name="13"/>
+                        <body name="1_4" pos="-6.6 0 0">
+                            <geom/>
+                            <joint name="14"/>
+                            <site name="14"/>
+                            <body name="1_5" pos="-6.6 0 0">
+                                <geom/>
+                                <joint name="15"/>
+                                <site name="15"/>
+                                <site name="end1" pos="-3.3 0 0.1"/>
+                                <site name="amplitude1" pos="-3.3 0 0" type="sphere" size="0.0002"/>
+                            </body>
+                        </body>
+                    </body>
+                </body>
+            </body>
+
+            <site class="fin" name="start2" pos="13.2 49.5 0.1"/>
+            <body name="fin2" childclass="fin" pos="25.3 49.5 0" euler="0 0 180">
+                <geom/>
+                <joint name="21"/>
+                <site name="21"/>
+                <body name="2_2" pos="-6.6 0 0">
+                    <geom/>
+                    <joint name="22"/>
+                    <site name="22"/>
+                    <body name="2_3" pos="-6.6 0 0">
+                        <geom/>
+                        <joint name="23"/>
+                        <site name="23"/>
+                        <body name="2_4" pos="-6.6 0 0">
+                            <geom/>
+                            <joint name="24"/>
+                            <site name="24"/>
+                            <body name="2_5" pos="-6.6 0 0">
+                                <geom/>
+                                <joint name="25"/>
+                                <site name="25"/>
+                                <site name="end2" pos="-3.3 0 0.1"/>
+                            </body>
+                        </body>
+                    </body>
+                </body>
+            </body>
+
+            <site class="fin" name="start3" pos="-13.2 16.5 0.1"/>
+            <body name="fin3" childclass="fin" pos="-25.3 16.5 0">
+                <geom/>
+                <joint name="31"/>
+                <site name="31"/>
+                <body name="3_2" pos="-6.6 0 0">
+                    <geom/>
+                    <joint name="32"/>
+                    <site name="32"/>
+                    <body name="3_3" pos="-6.6 0 0">
+                        <geom/>
+                        <joint name="33"/>
+                        <site name="33"/>
+                        <body name="3_4" pos="-6.6 0 0">
+                            <geom/>
+                            <joint name="34"/>
+                            <site name="34"/>
+                            <body name="3_5" pos="-6.6 0 0">
+                                <geom/>
+                                <joint name="35"/>
+                                <site name="35"/>
+                                <site name="end3" pos="-3.3 0 0.1"/>
+                                <site name="amplitude3" pos="-3.3 0 0" type="sphere" size="0.0002"/>
+                            </body>
+                        </body>
+                    </body>
+                </body>
+            </body>
+
+            <site class="fin" name="start4" pos="13.2 16.5 0.1"/>
+            <body name="fin4" childclass="fin" pos="25.3 16.5 0" euler="0 0 180">
+                <geom/>
+                <joint name="41"/>
+                <site name="41"/>
+                <body name="4_2" pos="-6.6 0 0">
+                    <geom/>
+                    <joint name="42"/>
+                    <site name="42"/>
+                    <body name="4_3" pos="-6.6 0 0">
+                        <geom/>
+                        <joint name="43"/>
+                        <site name="43"/>
+                        <body name="4_4" pos="-6.6 0 0">
+                            <geom/>
+                            <joint name="44"/>
+                            <site name="44"/>
+                            <body name="4_5" pos="-6.6 0 0">
+                                <geom/>
+                                <joint name="45"/>
+                                <site name="45"/>
+                                <site name="end4" pos="-3.3 0 0.1"/>
+                            </body>
+                        </body>
+                    </body>
+                </body>
+            </body>
+
+            <site class="fin" name="start5" pos="-13.2 -16.5 0.1"/>
+            <body name="fin5" childclass="fin" pos="-25.3 -16.5 0">
+                <geom/>
+                <joint name="51"/>
+                <site name="51"/>
+                <body name="5_2" pos="-6.6 0 0">
+                    <geom/>
+                    <joint name="52"/>
+                    <site name="52"/>
+                    <body name="5_3" pos="-6.6 0 0">
+                        <geom/>
+                        <joint name="53"/>
+                        <site name="53"/>
+                        <body name="5_4" pos="-6.6 0 0">
+                            <geom/>
+                            <joint name="54"/>
+                            <site name="54"/>
+                            <body name="5_5" pos="-6.6 0 0">
+                                <geom/>
+                                <joint name="55"/>
+                                <site name="55"/>
+                                <site name="end5" pos="-3.3 0 0.1"/>
+                            </body>
+                        </body>
+                    </body>
+                </body>
+            </body>
+
+            <site class="fin" name="start6" pos="13.2 -16.5 0.1"/>
+            <body name="fin6" childclass="fin" pos="25.3 -16.5 0" euler="0 0 180">
+                <geom/>
+                <joint name="61"/>
+                <site name="61"/>
+                <body name="6_2" pos="-6.6 0 0">
+                    <geom/>
+                    <joint name="62"/>
+                    <site name="62"/>
+                    <body name="6_3" pos="-6.6 0 0">
+                        <geom/>
+                        <joint name="63"/>
+                        <site name="63"/>
+                        <body name="6_4" pos="-6.6 0 0">
+                            <geom/>
+                            <joint name="64"/>
+                            <site name="64"/>
+                            <body name="6_5" pos="-6.6 0 0">
+                                <geom/>
+                                <joint name="65"/>
+                                <site name="65"/>
+                                <site name="end6" pos="-3.3 0 0.1"/>
+                            </body>
+                        </body>
+                    </body>
+                </body>
+            </body>
+
+            <site class="fin" name="start7" pos="-13.2 -49.5 0.1"/>
+            <body name="fin7" childclass="fin" pos="-25.3 -49.5 0">
+                <geom/>
+                <joint name="71"/>
+                <site name="71"/>
+                <body name="7_2" pos="-6.6 0 0">
+                    <geom/>
+                    <joint name="72"/>
+                    <site name="72"/>
+                    <body name="7_3" pos="-6.6 0 0">
+                        <geom/>
+                        <joint name="73"/>
+                        <site name="73"/>
+                        <body name="7_4" pos="-6.6 0 0">
+                            <geom/>
+                            <joint name="74"/>
+                            <site name="74"/>
+                            <body name="7_5" pos="-6.6 0 0">
+                                <geom/>
+                                <joint name="75"/>
+                                <site name="75"/>
+                                <site name="end7" pos="-3.3 0 0.1"/>
+                            </body>
+                        </body>
+                    </body>
+                </body>
+            </body>
+
+            <site class="fin" name="start8" pos="13.2 -49.5 0.1"/>
+            <body name="fin8" childclass="fin" pos="25.3 -49.5 0" euler="0 0 180">
+                <geom/>
+                <joint name="81"/>
+                <site name="81"/>
+                <body name="8_2" pos="-6.6 0 0">
+                    <geom/>
+                    <joint name="82"/>
+                    <site name="82"/>
+                    <body name="8_3" pos="-6.6 0 0">
+                        <geom/>
+                        <joint name="83"/>
+                        <site name="83"/>
+                        <body name="8_4" pos="-6.6 0 0">
+                            <geom/>
+                            <joint name="84"/>
+                            <site name="84"/>
+                            <body name="8_5" pos="-6.6 0 0">
+                                <geom/>
+                                <joint name="85"/>
+                                <site name="85"/>
+                                <site name="end8" pos="-3.3 0 0.1"/>
+                            </body>
+                        </body>
+                    </body>
+                </body>
+            </body>
+
+            <body name="Skin1" pos="-38.5 0 0" euler="180 0 180">
+                <flexcomp type="grid" dim="2" count="6 9 1" spacing="6.6 16.5 .2" mass="8e-6"
+                          name="s1" radius="0.001" rgba=".8 .8 .8 1">
+                    <edge equality="true" damping="0.00001"/>
+                    <plugin plugin="mujoco.elasticity.membrane">
+                        <config key="poisson" value="0.4"/>
+                        <config key="thickness" value="0.2"/>
+                        <!--Units are in Pa (SI)-->
+                        <config key="young" value="0.24"/>
+                    </plugin>
+                </flexcomp>
+            </body>
+            <body name="Skin2" pos="38.5 0 0">
+                <flexcomp type="grid" dim="2" count="6 9 1" spacing="6.6 16.5 0.2" mass="8e-6"
+                          name="s2" radius="0.001" rgba=".8 .8 .8 1">
+                    <edge equality="true" damping="0.00001"/>
+                    <plugin plugin="mujoco.elasticity.membrane">
+                        <config key="poisson" value="0.4"/>
+                        <config key="thickness" value="0.2"/>
+                        <!--Units are in Pa (SI)-->
+                        <config key="young" value="0.24"/>
+                    </plugin>
+                </flexcomp>
+            </body>
+        </body>
+    </worldbody>
+
+    <tendon>
+        <!-- fin 1 -->
+        <spatial name="t1" class="fin">
+            <site site="start1"/>
+            <site site="11"/>
+            <site site="12"/>
+            <site site="13"/>
+            <site site="14"/>
+            <site site="15"/>
+            <site site="end1"/>
+        </spatial>
+
+        <!-- fin 2 -->
+        <spatial name="t2" class="fin">
+            <site site="start2"/>
+            <site site="21"/>
+            <site site="22"/>
+            <site site="23"/>
+            <site site="24"/>
+            <site site="25"/>
+            <site site="end2"/>
+        </spatial>
+
+        <!-- fin 3 -->
+        <spatial name="t3" class="fin">
+            <site site="start3"/>
+            <site site="31"/>
+            <site site="32"/>
+            <site site="33"/>
+            <site site="34"/>
+            <site site="35"/>
+            <site site="end3"/>
+        </spatial>
+
+        <!-- fin 4 -->
+        <spatial name="t4" class="fin">
+            <site site="start4"/>
+            <site site="41"/>
+            <site site="42"/>
+            <site site="43"/>
+            <site site="44"/>
+            <site site="45"/>
+            <site site="end4"/>
+        </spatial>
+
+        <!-- fin 5 -->
+        <spatial name="t5" class="fin">
+            <site site="start5"/>
+            <site site="51"/>
+            <site site="52"/>
+            <site site="53"/>
+            <site site="54"/>
+            <site site="55"/>
+            <site site="end5"/>
+        </spatial>
+
+        <!-- fin 6 -->
+        <spatial name="t6" class="fin">
+            <site site="start6"/>
+            <site site="61"/>
+            <site site="62"/>
+            <site site="63"/>
+            <site site="64"/>
+            <site site="65"/>
+            <site site="end6"/>
+        </spatial>
+
+        <!-- fin 7 -->
+        <spatial name="t7" class="fin">
+            <site site="start7"/>
+            <site site="71"/>
+            <site site="72"/>
+            <site site="73"/>
+            <site site="74"/>
+            <site site="75"/>
+            <site site="end7"/>
+        </spatial>
+
+        <!-- fin 8 -->
+        <spatial name="t8" class="fin">
+            <site site="start8"/>
+            <site site="81"/>
+            <site site="82"/>
+            <site site="83"/>
+            <site site="84"/>
+            <site site="85"/>
+            <site site="end8"/>
+        </spatial>
+    </tendon>
+
+    <actuator>
+        <motor class="fin" name="fin1" tendon="t8"/>
+        <motor class="fin" name="fin2" tendon="t7"/>
+        <motor class="fin" name="fin3" tendon="t6"/>
+        <motor class="fin" name="fin4" tendon="t5"/>
+        <motor class="fin" name="fin5" tendon="t4"/>
+        <motor class="fin" name="fin6" tendon="t3"/>
+        <motor class="fin" name="fin7" tendon="t2"/>
+        <motor class="fin" name="fin8" tendon="t1"/>
+    </actuator>
+
+    <sensor>
+        <velocimeter name="vel" site="centreOfMass"/>
+        <framelinvel name="global_vel" objtype="site" objname="centreOfMass"/>
+        <gyro name="global_angvel" site="centreOfMass"/>
+        <framepos name="amplitude1" objtype="site" objname="amplitude1"/>
+        <framepos name="amplitude3" objtype="site" objname="amplitude3"/>
+        <framepos name="c_m" objtype="geom" objname="main_body"/>
+        <framequat name="quat" objtype="geom" objname="main_body"/>
+    </sensor>
+
+    <equality>
+        <!-- fin 1 -->
+        <weld body1="fin1" body2="s1_16" class="fin"/>
+        <weld body1="1_2" body2="s1_25" class="fin"/>
+        <weld body1="1_3" body2="s1_34" class="fin"/>
+        <weld body1="1_4" body2="s1_43" class="fin"/>
+        <weld body1="1_5" body2="s1_52" class="fin"/>
+        <weld body1="1_5" body2="s1_53" class="fin"/>
+
+        <!-- fin 3 -->
+        <weld body1="fin3" body2="s1_14" class="fin"/>
+        <weld body1="3_2" body2="s1_23" class="fin"/>
+        <weld body1="3_3" body2="s1_32" class="fin"/>
+        <weld body1="3_4" body2="s1_41" class="fin"/>
+        <weld body1="3_5" body2="s1_50" class="fin"/>
+
+        <!-- fin 5 -->
+        <weld body1="fin5" body2="s1_12" class="fin"/>
+        <weld body1="5_2" body2="s1_21" class="fin"/>
+        <weld body1="5_3" body2="s1_30" class="fin"/>
+        <weld body1="5_4" body2="s1_39" class="fin"/>
+        <weld body1="5_5" body2="s1_48" class="fin"/>
+
+        <!-- fin 7 -->
+        <weld body1="fin7" body2="s1_10" class="fin"/>
+        <weld body1="7_2" body2="s1_19" class="fin"/>
+        <weld body1="7_3" body2="s1_28" class="fin"/>
+        <weld body1="7_4" body2="s1_37" class="fin"/>
+        <weld body1="7_5" body2="s1_46" class="fin"/>
+        <weld body1="7_5" body2="s1_45" class="fin"/>
+
+        <!-- fin 2 -->
+        <weld body1="fin2" body2="s2_16" class="fin"/>
+        <weld body1="2_2" body2="s2_25" class="fin"/>
+        <weld body1="2_3" body2="s2_34" class="fin"/>
+        <weld body1="2_4" body2="s2_43" class="fin"/>
+        <weld body1="2_5" body2="s2_52" class="fin"/>
+        <weld body1="2_5" body2="s2_53" class="fin"/>
+
+        <!-- fin 4 -->
+        <weld body1="fin4" body2="s2_14" class="fin"/>
+        <weld body1="4_2" body2="s2_23" class="fin"/>
+        <weld body1="4_3" body2="s2_32" class="fin"/>
+        <weld body1="4_4" body2="s2_41" class="fin"/>
+        <weld body1="4_5" body2="s2_50" class="fin"/>
+
+        <!-- fin 6 -->
+        <weld body1="fin6" body2="s2_12" class="fin"/>
+        <weld body1="6_2" body2="s2_21" class="fin"/>
+        <weld body1="6_3" body2="s2_30" class="fin"/>
+        <weld body1="6_4" body2="s2_39" class="fin"/>
+        <weld body1="6_5" body2="s2_48" class="fin"/>
+
+        <!-- fin 8 -->
+        <weld body1="fin8" body2="s2_10" class="fin"/>
+        <weld body1="8_2" body2="s2_19" class="fin"/>
+        <weld body1="8_3" body2="s2_28" class="fin"/>
+        <weld body1="8_4" body2="s2_37" class="fin"/>
+        <weld body1="8_5" body2="s2_46" class="fin"/>
+        <weld body1="8_5" body2="s2_45" class="fin"/>
+
+        <!-- body -->
+        <weld body1="main_body" body2="s1_0" class="fin"/>
+        <weld body1="main_body" body2="s1_1" class="fin"/>
+        <weld body1="main_body" body2="s1_2" class="fin"/>
+        <weld body1="main_body" body2="s1_3" class="fin"/>
+        <weld body1="main_body" body2="s1_4" class="fin"/>
+        <weld body1="main_body" body2="s1_5" class="fin"/>
+        <weld body1="main_body" body2="s1_6" class="fin"/>
+        <weld body1="main_body" body2="s1_7" class="fin"/>
+        <weld body1="main_body" body2="s1_8" class="fin"/>
+
+        <weld body1="main_body" body2="s2_0" class="fin"/>
+        <weld body1="main_body" body2="s2_1" class="fin"/>
+        <weld body1="main_body" body2="s2_2" class="fin"/>
+        <weld body1="main_body" body2="s2_3" class="fin"/>
+        <weld body1="main_body" body2="s2_4" class="fin"/>
+        <weld body1="main_body" body2="s2_5" class="fin"/>
+        <weld body1="main_body" body2="s2_6" class="fin"/>
+        <weld body1="main_body" body2="s2_7" class="fin"/>
+        <weld body1="main_body" body2="s2_8" class="fin"/>
+    </equality>
+</mujoco>

@@ -1,0 +1,115 @@
+<mujoco>
+    <option gravity="0 0 -9810" density="1e-6" viscosity="9e-7"/>
+
+    <asset>
+        <texture name="grid" type="2d" builtin="checker" width="512" height="512" rgb1=".1 .2 .3" rgb2=".2 .3 .4"/>
+        <material name="grid" texture="grid" texrepeat="0.1 0.1" texuniform="true" reflectance=".05"/>
+    </asset>
+
+    <extension>
+        <plugin plugin="mujoco.elasticity.membrane"/>
+    </extension>
+
+    <default>
+        <default class="fin">
+            <geom type="box" size="3.3 3 0.1" rgba="0.2 0.2 0.2 1" mass="0.00016" fluidshape="ellipsoid"/>
+            <joint type="hinge" axis="0 1 0" damping="25" stiffness="9000" limited="true" range="-10 10" pos="3.3 0 0"/>
+            <motor gear="5850" ctrllimited="true" ctrlrange="-9 9"/>
+            <site type="sphere" pos="3.3 0 0.1" size="0.2" rgba="1 1 0 1"/>
+            <equality solimp="0.99 0.99 0.00001" solref="0.0001 8"/>
+        </default>
+    </default>
+
+    <worldbody>
+        <light diffuse=".5 .5 .5" pos="0 0 900" dir="0 0 -1" castshadow="false"/>
+        <light diffuse=".5 .5 .5" pos="100 0 -20" dir="-1 0 0" castshadow="false"/>
+
+        <site class="fin" name="start" pos="-13.2 0 0.1"/>
+        <body name="fin2" childclass="fin" euler="0 0 180">
+                <geom/>
+                <joint name="21"/>
+                <site name="21"/>
+                <body name="2_2" pos="-6.6 0 0">
+                    <geom/>
+                    <joint name="22"/>
+                    <site name="22"/>
+                    <body name="2_3" pos="-6.6 0 0">
+                        <geom/>
+                        <joint name="23"/>
+                        <site name="23"/>
+                        <body name="2_4" pos="-6.6 0 0">
+                            <geom/>
+                            <joint name="24"/>
+                            <site name="24"/>
+                            <body name="2_5" pos="-6.6 0 0">
+                                <geom/>
+                                <joint name="25"/>
+                                <site name="25"/>
+                                <site name="end" pos="-3.3 0 0.1"/>
+                                <site name="amplitude1" pos="-3.3 0 0.1" type="sphere" size="0.0002"/>
+<!--                                <geom type="sphere" pos="-3.3 0 0" size="0.0002" mass="116e-6"/>-->
+<!--                                <geom type="sphere" pos="-3.3 0 0" size="0.0002" mass="333e-6"/>-->
+<!--                                <geom type="sphere" pos="-3.3 0 0" size="0.0002" mass="396e-6"/>-->
+                                <geom type="sphere" pos="-3.3 0 0" size="0.0002" mass="667e-6"/>
+                            </body>
+                        </body>
+                    </body>
+                </body>
+            </body>
+        <body name="skin" pos="13.2 0 0">
+                <flexcomp name="S1" type="grid" dim="2" count="6 6 1" spacing="6.6 6.6 0.2"
+                          radius="0.001" rgba="1 1 1 1" mass="2.3958e-6">
+                    <edge equality="true" damping="0.001"/>
+                    <pin id="0 1 2 3 4 5"/>
+                    <plugin plugin="mujoco.elasticity.membrane">
+                        <config key="poisson" value="0.4"/>
+                        <config key="thickness" value="0.2"/>
+                        <!--Units are in Pa (SI)-->
+                        <config key="young" value="0.24"/>
+                    </plugin>
+                </flexcomp>
+            </body>
+    </worldbody>
+
+    <sensor>
+        <framepos name="amplitude1" objtype="site" objname="amplitude1"/>
+    </sensor>
+
+    <tendon>
+        <spatial name="t1" width="0.05" rgba="1 0 0 1" limited="false" stiffness="10"
+                 range="42.7 43.1" solimplimit="0.99 0.99 0.00001" solreflimit="0.0001 8">
+            <site site="start"/>
+            <site site="21"/>
+            <site site="22"/>
+            <site site="23"/>
+            <site site="24"/>
+            <site site="25"/>
+            <site site="end"/>
+        </spatial>
+    </tendon>
+
+    <equality>
+        <weld class="fin" body1="2_2" body2="S1_8"/>
+        <weld class="fin" body1="2_2" body2="S1_9"/>
+
+        <weld class="fin" body1="2_3" body2="S1_14"/>
+        <weld class="fin" body1="2_3" body2="S1_15"/>
+
+        <weld class="fin" body1="2_4" body2="S1_20"/>
+        <weld class="fin" body1="2_4" body2="S1_21"/>
+
+        <weld class="fin" body1="2_5" body2="S1_26"/>
+        <weld class="fin" body1="2_5" body2="S1_27"/>
+
+        <weld class="fin" body1="2_5" body2="S1_30"/>
+
+        <weld class="fin" body1="2_5" body2="S1_32"/>
+        <weld class="fin" body1="2_5" body2="S1_33"/>
+
+        <weld class="fin" body1="2_5" body2="S1_35"/>
+    </equality>
+
+    <actuator> <!-- fin 2 -->
+        <motor class="fin" name="t1" tendon="t1"/>
+    </actuator>
+</mujoco>
